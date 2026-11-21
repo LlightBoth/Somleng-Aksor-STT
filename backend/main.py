@@ -24,7 +24,7 @@ app.add_middleware(
 )
 
 # Load Whisper once when the server starts
-model = whisper.load_model("base")
+model = whisper.load_model("tiny")
 
 MAX_FILE_SIZE = 30 * 1024 * 1024  # 30 MB
 ALLOWED_EXTENSIONS = {".mp3", ".wav", ".m4a", ".ogg", ".webm", ".flac"}
