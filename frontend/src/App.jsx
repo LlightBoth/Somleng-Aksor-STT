@@ -69,18 +69,26 @@ export default function App() {
   // Ping backend to check health
   const checkServer = async () => {
     setServerStatus("checking");
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
-      const res = await fetch(`${API_URL}/`, { signal: controller.signal });
-      clearTimeout(timeoutId);
-      if (res.ok) {
-        setServerStatus("online");
-      } else {
-        setServerStatus("offline");
+      const res = await fetch(`${API_URL}/health`, {
+        signal: controller.signal,
+      });
+
+      if (!res.ok) {
+        throw new Error("Server unavailable");
       }
+
+      const data = await res.json();
+
+      setServerStatus(data.status === "online" ? "online" : "offline");
     } catch {
       setServerStatus("offline");
+    } finally {
+      clearTimeout(timeoutId);
     }
   };
 
